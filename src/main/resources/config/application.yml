@@ -1,0 +1,19 @@
+# spring
+spring:
+  # profiles
+  profiles:
+    active: dev
+  # swagger
+  swagger:
+    enabled: true
+    base-package: com.mozhumz.balance.web.controller
+# log
+logging:
+  config: classpath:config/logback-spring.xml
+  level:
+    root: error
+    com.mozhumz.balance.balance: info
+# mybatis plus
+mybatis-plus:
+  type-aliases-package: com.mozhumz.balance.model.entity,com.mozhumz.balance.model.*
+  mapper-locations: classpath:mappers/*Mapper.xml
