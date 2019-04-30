@@ -12,7 +12,7 @@ logging:
   config: classpath:config/logback-spring.xml
   level:
     root: error
-    com.mozhumz.balance.balance: info
+    com.mozhumz.balance: info
 # mybatis plus
 mybatis-plus:
   type-aliases-package: com.mozhumz.balance.model.entity,com.mozhumz.balance.model.*
