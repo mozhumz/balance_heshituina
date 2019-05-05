@@ -3,7 +3,6 @@ package com.mozhumz.balance.web.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +16,7 @@ import javax.servlet.http.HttpServletRequest;
  * @date 2019/4/2 16:55
  */
 @RestController
-@Api(value = "测试相关接口", description = "测试相关接口")
+    @Api(value = "测试相关接口", description = "测试相关接口")
 @RequestMapping("/api/test")
 public class TestController {
     @Resource
