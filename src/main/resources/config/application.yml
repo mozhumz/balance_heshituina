@@ -17,3 +17,9 @@ logging:
 mybatis-plus:
   type-aliases-package: com.mozhumz.balance.model.entity,com.mozhumz.balance.model.*
   mapper-locations: classpath:mappers/*Mapper.xml
+
+login:
+  url: http://localhost:8080/index.html
+
+web:
+  url: http://localhost:8080/balance/index.html

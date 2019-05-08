@@ -35,11 +35,6 @@
             <artifactId>framework-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--redis-->
-        <!--<dependency>-->
-            <!--<groupId>top.lshaci</groupId>-->
-            <!--<artifactId>framework-redis</artifactId>-->
-        <!--</dependency>-->
         <!--session -->
         <dependency>
             <groupId>org.springframework.session</groupId>
