@@ -23,3 +23,8 @@ eureka:
   client:
     service-url:
       defaultZone: http://127.0.0.1:8888/eureka/
+
+urlPre:
+  web: http://127.0.0.1:8080/balance
+  sso: http://127.0.0.1:8080/zuul/api/login/checkLogin
+  webOut: http://127.0.0.1:8080/balance/api/login/logOut
