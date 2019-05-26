@@ -59,6 +59,8 @@ public class SSOFilter implements Filter {
             if(zuulResult.checkToken(checkTokenDto)){
                 //设置session
                 request.getSession().setAttribute(CommonConstant.token,tokenStr);
+                filterChain.doFilter(request,response);
+                return;
             }
         }
         //重定向到认证中心

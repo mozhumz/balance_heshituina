@@ -13,8 +13,8 @@ import top.lshaci.framework.web.model.JsonResponse;
  * @author caijiang
  * @date 2018/3/8
  */
-@FeignClient(value = "zuul",url = "127.0.0.1:8080")
-//@FeignClient(value = "zuul")
+//@FeignClient(value = "zuul",url = "127.0.0.1:8080")
+@FeignClient(value = "zuul")
 public interface IZuulFeign {
 
 
