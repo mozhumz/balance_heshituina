@@ -8,6 +8,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.Date;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -16,17 +18,17 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ * 客户余额变动表（充值 消费）
  * </p>
  *
  * @author lshaci
- * @since 2019-04-29
+ * @since 2019-05-27
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("t_customer_balance_log")
-@ApiModel(value="CustomerBalanceLog对象", description="")
+@ApiModel(value="CustomerBalanceLog对象", description="客户余额变动表（充值 消费）")
 public class CustomerBalanceLog extends Model<CustomerBalanceLog> {
 
     private static final long serialVersionUID = 1L;
@@ -39,16 +41,25 @@ public class CustomerBalanceLog extends Model<CustomerBalanceLog> {
     private Long customerId;
 
     @ApiModelProperty(value = "客户余额")
-    private BigDecimal money;
+    private Double money;
+
+    @TableField("productIdStr")
+    private String productIdStr;
+
+    @ApiModelProperty(value = "余额变动类型：1 消费 2 充值")
+    private Integer type;
 
     @TableField("createDate")
-    private LocalDateTime createDate;
+    private Date createDate;
 
     @TableField("updateDate")
-    private LocalDateTime updateDate;
+    private Date updateDate;
 
     @ApiModelProperty(value = "1正常 2删除")
-    private Boolean state;
+    private Integer state;
+
+    @ApiModelProperty(value = "备注")
+    private String remark;
 
 
     @Override

@@ -9,6 +9,7 @@ import org.springframework.util.DigestUtils;
  */
 public class MD5Util {
     public static final String DEFAULT_KEY="Mozhumz_Xr_WangWei";
+    public static final String BALANCE_KEY="Mozhumz_Balance_610_WangWei";
 
     /**
      * MD5方法
@@ -30,8 +31,21 @@ public class MD5Util {
      * 默认密码 123456
      * @return
      */
-    public static String getDefaultPwd(){
-        return md5("123456",DEFAULT_KEY);
+    public static String getDefaultBalancePwd(){
+        return md5(md5("123456",DEFAULT_KEY),BALANCE_KEY);
+    }
+
+    /**
+     * 客户支付密码校验
+     * @param pwd1
+     * @param sqlPwd
+     * @return
+     */
+    public static boolean checkBalancePwd(String pwd1,String sqlPwd){
+        if(!CheckParamsUtil.check(pwd1,sqlPwd)){
+            return false;
+        }
+        return (md5(pwd1,BALANCE_KEY).equals(sqlPwd));
     }
 
 

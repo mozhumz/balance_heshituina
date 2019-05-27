@@ -24,6 +24,10 @@
             <groupId>top.lshaci</groupId>
             <artifactId>framework-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>top.lshaci</groupId>
+            <artifactId>framework-excel</artifactId>
+        </dependency>
         <!-- top lshaci framework swagger module -->
         <dependency>
             <groupId>top.lshaci</groupId>

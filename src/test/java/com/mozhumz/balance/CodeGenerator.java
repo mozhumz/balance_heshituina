@@ -130,7 +130,7 @@ public class CodeGenerator {
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setEntityLombokModel(true);
-        strategy.setExclude("no");
+//        strategy.setExclude("no");
         strategy.setTablePrefix("t_");
 
         mpg.setGlobalConfig(gc);

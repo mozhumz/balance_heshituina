@@ -7,9 +7,35 @@
         <id column="id" property="id" />
         <result column="customerId" property="customerId" />
         <result column="money" property="money" />
+        <result column="productIdStr" property="productIdStr" />
+        <result column="type" property="type" />
         <result column="createDate" property="createDate" />
         <result column="updateDate" property="updateDate" />
         <result column="state" property="state" />
+        <result column="remark" property="remark" />
     </resultMap>
 
+
+    <select id="findBalanceLogList" resultType="com.mozhumz.balance.model.entity.CustomerBalanceLog">
+        select a.* from t_customer_balance_log a
+        left join t_customer b on a.customerId=b.id
+        <trim prefix="where" suffixOverrides="and">
+            <if test="balanceLogQo.keyword!=null">
+                (b.name like #{balanceLogQo.keyword}
+                or b.phone like #{balanceLogQo.keyword} or b.customerNo like #{balanceLogQo.keyword}) and
+            </if>
+            <if test="balanceLogQo.type!=null">
+                a.type=#{balanceLogQo.type} and
+            </if>
+            <if test="balanceLogQo.productIdStr!=null">
+                a.productIdStr like #{balanceLogQo.productIdStr} and
+            </if>
+            <if test="balanceLogQo.startDate!=null">
+                a.createDate &gt;= #{balanceLogQo.startDate} and
+            </if>
+            <if test="balanceLogQo.endDate!=null">
+                a.createDate &lt; #{balanceLogQo.endDate} and
+            </if>
+        </trim>
+    </select>
 </mapper>
