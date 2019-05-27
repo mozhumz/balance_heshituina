@@ -61,6 +61,13 @@ public class CustomerBalanceLog extends Model<CustomerBalanceLog> {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @TableField("doUserName")
+    @ApiModelProperty(value = "操作账号")
+    private String doUserName;
+    @TableField("doName")
+    @ApiModelProperty(value = "实际操作人名字")
+    private String doName;
+
 
     @Override
     protected Serializable pkVal() {

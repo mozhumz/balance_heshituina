@@ -13,6 +13,8 @@
         <result column="updateDate" property="updateDate" />
         <result column="state" property="state" />
         <result column="remark" property="remark" />
+        <result column="doUserName" property="doUserName" />
+        <result column="doName" property="doName" />
     </resultMap>
 
 

@@ -15,6 +15,7 @@ import com.mozhumz.balance.model.qo.BalanceLogQo;
 import com.mozhumz.balance.service.ICustomerBalanceLogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.mozhumz.balance.utils.CommonUtil;
+import com.mozhumz.balance.utils.SessionUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.lshaci.framework.common.exception.BaseException;
@@ -108,6 +109,8 @@ public class CustomerBalanceLogServiceImpl extends ServiceImpl<ICustomerBalanceL
         customerBalanceLog.setProductIdStr(CommonUtil.getIdStr(balanceDto.getProductIds()));
         customerBalanceLog.setCreateDate(new Date());
         customerBalanceLog.setUpdateDate(new Date());
+        customerBalanceLog.setDoName(balanceDto.getDoName());
+        customerBalanceLog.setDoUserName(SessionUtil.getLoginUser().getUsername());
         customerBalanceLog.insert();
 
         return customerBalanceLog;
