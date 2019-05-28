@@ -24,4 +24,6 @@ public class BalanceDto {
     private Integer type;
 
     private String remark;
+    @IsNeed(flag = true)
+    private String doName;
 }
