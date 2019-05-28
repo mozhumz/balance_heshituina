@@ -19,7 +19,7 @@ mybatis-plus:
   mapper-locations: classpath:mappers/*Mapper.xml
 
 login:
-  url: http://localhost:8080/index.html
+  url: http://localhost:8080/zuul/index.html
 
 web:
   url: http://localhost:8080/balance/index.html
