@@ -1,5 +1,6 @@
 package com.mozhumz.balance.model.dto;
 
+import com.mozhumz.balance.model.entity.Role;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,6 +8,8 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -35,14 +38,21 @@ public class SessionUser implements Serializable {
     @ApiModelProperty(value = "拥有的角色id 对应t_role 如',1,2,3,'")
     private String roleIdStr;
 
-    private LocalDateTime createDate;
+    private Date createDate;
 
-    private LocalDateTime updateDate;
+    private Date updateDate;
 
     @ApiModelProperty(value = "1 正常 2禁用")
     private Integer state;
 
     private String token;
+
+    private List<Role> roleList;
+
+    @ApiModelProperty(value = "当前登录角色")
+    private Role role;
+
+
 
 
 }
