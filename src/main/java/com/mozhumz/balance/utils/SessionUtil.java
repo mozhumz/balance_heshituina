@@ -3,6 +3,7 @@ package com.mozhumz.balance.utils;
 import com.mozhumz.balance.constant.CommonConstant;
 import com.mozhumz.balance.model.dto.SessionUser;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -46,7 +47,8 @@ public class SessionUtil {
         if(token==null){
             throw new LoginException();
         }
-        SessionUser userDto= (SessionUser) redisTemplate.opsForValue().get(CommonConstant.globalSessionUser+token);
+        JSONObject jsonObject= (JSONObject) redisTemplate.opsForValue().get(CommonConstant.globalSessionUser+token);
+        SessionUser userDto= (SessionUser) JSONObject.toBean(jsonObject,SessionUser.class);
         return userDto;
     }
 
