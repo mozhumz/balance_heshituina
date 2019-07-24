@@ -25,10 +25,10 @@
                 (a.name like #{qo.keyword}
                 or a.phone like #{qo.keyword} or a.customerNo like #{qo.keyword}) and
             </if>
-            <if test="balanceLogQo.startDate!=null">
+            <if test="qo.startDate!=null">
                 a.createDate &gt;= #{qo.startDate} and
             </if>
-            <if test="balanceLogQo.endDate!=null">
+            <if test="qo.endDate!=null">
                 a.createDate &lt; #{qo.endDate} and
             </if>
         </trim>

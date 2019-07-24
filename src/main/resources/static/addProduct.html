@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>余额管理</title>
+    <link rel="stylesheet" href="static/css/element-ui.css">
+    <script src="static/js/common/vue.js"></script>
+    <script src="static/js/common/jquery-3.4.1.min.js"></script>
+    <script src="static/js/common/md5.js"></script>
+    <script src="static/js/common/api.js"></script>
+    <script src="static/js/common/element-ui.js"></script>
+    <script src="static/js/common/user.js"></script>
+    <script src="static/js/common/util.js"></script>
+    <script src="static/js/addProduct.js"></script>
+</head>
+<style>
+    .el-row {
+    width:85%;
+    margin-bottom: 20px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .border-left{
+    margin-left:6%;
+  }
+
+
+
+</style>
+<body>
+
+<div id="main" >
+<!--    登录信息-->
+    <el-row :gutter="24">
+        <!--<el-col :span="12"><div class="grid-content bg-purple" ></div></el-col>-->
+        <!--<el-col :span="16"><div class="grid-content bg-purple"></div></el-col>-->
+        <el-col :span="24">
+            <div class="grid-content bg-purple" style="text-align:right">
+                <i class="el-icon-user-solid" id="welcomeUser"></i>
+                <el-button type="primary" @click="logOut" icon="el-icon-circle-close">退出</el-button>
+            </div>
+        </el-col>
+    </el-row>
+    <div style="width:50%;margin:0 auto;">
+        <el-row class="border-left">
+            <el-col style="color: #12a1e9;
+    font-weight: bold;font-size:40px;">添加消费项目</el-col>
+
+        </el-row>
+
+
+        <!--添加项目-->
+        <div  class="border-left" >
+            <el-row :gutter="20">
+                <font style="color:red">*</font>
+                <span>项目名称</span>
+                <el-input type="text" v-model="addProd.name"  clearable></el-input>
+            </el-row>
+            <el-row :gutter="20">
+                <span>项目备注</span>
+                <el-input type="text" v-model="addProd.remark" placeholder=""  clearable></el-input>
+            </el-row>
+            <el-button  type="primary"  @click="addProduct()">确定</el-button>
+        </div>
+    </div>
+
+
+
+
+</div>
+</body>
+
+</html>

@@ -2,11 +2,11 @@ package com.mozhumz.balance.feign;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import com.hyj.util.exception.BaseException;
+import com.hyj.util.web.JsonResponse;
 import com.mozhumz.balance.feign.entity.dto.CheckTokenDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import top.lshaci.framework.common.exception.BaseException;
-import top.lshaci.framework.web.model.JsonResponse;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Type;

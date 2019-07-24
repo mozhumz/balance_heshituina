@@ -7,7 +7,19 @@
         <id column="id" property="id" />
         <result column="customerId" property="customerId" />
         <result column="money" property="money" />
-        <result column="productIdStr" property="productIdStr" />
+        <result column="type" property="type" />
+        <result column="createDate" property="createDate" />
+        <result column="updateDate" property="updateDate" />
+        <result column="state" property="state" />
+        <result column="remark" property="remark" />
+        <result column="doUserName" property="doUserName" />
+        <result column="doUserId" property="doUserId" />
+    </resultMap>
+
+    <resultMap id="voMap" type="com.mozhumz.balance.model.vo.CustomerBalanceLogVO">
+        <id column="id" property="id" />
+        <result column="customerId" property="customerId" />
+        <result column="money" property="money" />
         <result column="type" property="type" />
         <result column="createDate" property="createDate" />
         <result column="updateDate" property="updateDate" />
@@ -15,12 +27,54 @@
         <result column="remark" property="remark" />
         <result column="doUserName" property="doUserName" />
         <result column="doName" property="doName" />
+        <result column="doUserId" property="doUserId" />
+        <result column="customerName" property="customerName" />
+        <result column="customerNo" property="customerNo" />
+        <result column="phone" property="phone" />
+<!--        <association property="productUserList" column="id" select="findMore">-->
+
+<!--        </association>-->
+        <collection property="productUserList"  column="id" ofType="com.mozhumz.balance.model.vo.ProductUserVO"
+            select="findMore">
+        </collection>
     </resultMap>
 
+    <resultMap id="moreMap" type="com.mozhumz.balance.model.vo.ProductUserVO">
+        <result column="balanceLogId" property="balanceLogId" />
+        <result column="userId" property="userId" />
+        <result column="realName" property="realName" />
+        <collection property="productList" ofType="com.mozhumz.balance.model.entity.Product">
+            <result column="productId" property="id"/>
+            <result column="productName" property="name"/>
+        </collection>
+    </resultMap>
 
-    <select id="findBalanceLogList" resultType="com.mozhumz.balance.model.entity.CustomerBalanceLog">
-        select a.* from t_customer_balance_log a
+    <select id="findMore" resultMap="moreMap">
+        select
+            a.balanceLogId,
+            a.userId,
+            c.realName,
+            b.productId,
+            d.name as productName
+        from t_balance_log_user a
+        left join t_balance_log_product b on a.id=b.balanceLogUserId
+        left join t_user c on a.userId=c.id
+        left join t_product d on b.productId=d.id
+        where
+        a.balanceLogId=#{id}
+    </select>
+
+    <select id="findBalanceLogList" resultMap="voMap">
+        select
+            a.*,
+            b.name as customerName,
+            b.phone,
+            b.customerNo,
+            c.realName as doName
+
+        from t_customer_balance_log a
         left join t_customer b on a.customerId=b.id
+        left join t_user c on c.id=a.doUserId
         <trim prefix="where" suffixOverrides="and">
             <if test="balanceLogQo.keyword!=null">
                 (b.name like #{balanceLogQo.keyword}

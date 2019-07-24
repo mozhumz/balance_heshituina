@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mozhumz.balance.mapper.IUserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.mozhumz.balance.model.entity.User">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="password" property="password" />
+        <result column="roleIdStr" property="roleIdStr" />
+        <result column="createDate" property="createDate" />
+        <result column="updateDate" property="updateDate" />
+        <result column="state" property="state" />
+        <result column="realName" property="realName" />
+        <result column="phone" property="phone" />
+        <result column="balancePwd" property="balancePwd" />
+        <result column="gender" property="gender" />
+
+    </resultMap>
+    <resultMap id="userVOMap" type="com.mozhumz.balance.model.vo.UserVO">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="roleIdStr" property="roleIdStr" />
+        <result column="createDate" property="createDate" />
+        <result column="updateDate" property="updateDate" />
+        <!--        <result column="state" property="state" javaType="java.lang.Integer" />-->
+        <result column="state" property="state"  />
+        <result column="realName" property="realName" />
+        <result column="phone" property="phone" />
+        <result column="gender" property="gender" />
+        <collection property="roleList"  ofType="com.mozhumz.balance.model.entity.Role" select="findRoleInfo"
+                    column="{id=id}">
+        </collection>
+    </resultMap>
+
+    <select id="findUserVOList" parameterType="com.mozhumz.balance.model.qo.UserQo" resultMap="userVOMap">
+        select
+
+        a.*
+
+        from t_user a
+
+        <trim prefix="where" suffixOverrides="and">
+            <if test="qo.roleIdStr!=null">
+                a.roleIdStr like #{qo.roleIdStr} and
+            </if>
+            <if test="qo.keyword!=null">
+                (a.username like #{qo.keyword} or a.phone like #{qo.keyword} or a.realName like #{qo.keyword}) and
+            </if>
+        </trim>
+    </select>
+
+    <select id="findRoleInfo"  resultType="com.mozhumz.balance.model.entity.Role">
+        select
+
+        c.*
+
+        from t_user a
+        left join t_user_role b
+        on a.id=b.userId
+        left join t_role c on b.roleId=c.id
+        where
+        a.id=#{id}
+    </select>
+
+
+    <insert id="addOne" parameterType="com.mozhumz.balance.model.entity.User">
+        insert into t_user
+        set
+        <if test="id!=null">
+            id=#{id},
+        </if>
+        <if test="username!=null">
+            username=#{username},
+        </if>
+        <if test="password!=null">
+            password=#{password},
+        </if>
+        <if test="roleIdStr!=null">
+            roleIdStr=#{roleIdStr},
+        </if>
+        <if test="phone!=null">
+            phone=#{phone},
+        </if>
+        <if test="realName!=null">
+            realName=#{realName},
+        </if>
+        <if test="createDate!=null">
+            createDate=#{createDate},
+        </if>
+        <if test="updateDate!=null">
+            updateDate=#{updateDate},
+        </if>
+        state=1
+
+    </insert>
+
+</mapper>

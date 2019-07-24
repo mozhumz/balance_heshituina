@@ -1,5 +1,7 @@
 package com.mozhumz.balance.model.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import java.time.LocalDateTime;
@@ -30,6 +32,7 @@ public class Product extends Model<Product> {
 
     private static final long serialVersionUID = 1L;
 
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     private String name;
@@ -39,6 +42,8 @@ public class Product extends Model<Product> {
 
     @TableField("updateDate")
     private Date updateDate;
+
+    private String remark;
 
 
     @Override

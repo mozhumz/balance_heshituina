@@ -2,9 +2,266 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>余额管理</title>
+    <link rel="stylesheet" href="static/css/element-ui.css">
+    <script src="static/js/common/vue.js"></script>
+    <script src="static/js/common/jquery-3.4.1.min.js"></script>
+    <script src="static/js/common/md5.js"></script>
+    <script src="static/js/common/api.js"></script>
+    <script src="static/js/common/element-ui.js"></script>
+    <script src="static/js/common/user.js"></script>
+    <script src="static/js/common/util.js"></script>
+    <script src="static/js/main.js"></script>
 </head>
+<style>
+    .el-row {
+    width:85%;
+    margin-bottom: 20px;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .border-left{
+    margin-left:6%;
+  }
+
+
+
+</style>
 <body>
-    <h1>welcome</h1>
+
+<div id="main" >
+<!--    登录信息-->
+    <el-row :gutter="24">
+        <!--<el-col :span="12"><div class="grid-content bg-purple" ></div></el-col>-->
+        <!--<el-col :span="16"><div class="grid-content bg-purple"></div></el-col>-->
+        <el-col :span="24">
+            <div class="grid-content bg-purple" style="text-align:right">
+                <i class="el-icon-user-solid" id="welcomeUser"></i>
+                <el-button type="primary" @click="logOut" icon="el-icon-circle-close">退出</el-button>
+            </div>
+        </el-col>
+    </el-row>
+    <!--<h5 style="text-align:center">导航栏</h5>-->
+    <el-row class="border-left">
+        <el-col :span="4"></el-col>
+        <el-menu
+                class="el-menu-demo" mode="horizontal"
+                default-active="1"
+        >
+            <el-menu-item index="1" @click="changeMenu(1)">
+                <!--<i class="el-icon-menu"></i>-->
+                <span slot="title">客户列表</span>
+            </el-menu-item>
+
+            <el-menu-item v-if="isAdmin" index="3" @click="changeMenu(2)">
+                <!--<i class="el-icon-menu"></i>-->
+                <span slot="title">添加客户</span>
+            </el-menu-item>
+            <el-menu-item v-if="isAdmin" index="4" @click="changeMenu(3)">
+                <!--<i class="el-icon-menu"></i>-->
+                <span slot="title">消费项目列表</span>
+            </el-menu-item>
+        </el-menu>
+    </el-row>
+
+<!--    客户列表-->
+    <div v-show="customerList_f" class="border-left">
+
+        <el-row v-if="isAdmin">
+            <el-col :span="2" style="color: #12a1e9;font-weight: bold;">导入客户： </el-col>
+            <el-col :span="6"><a href="static/template/客户导入模板.xlsx">导入模板下载</a></el-col>
+             <el-col :span="6">
+                 <el-upload
+                         class="upload-demo"
+                         ref="upload"
+                         action="http://127.0.0.1:8080/zuul/balance/api/balance/addCustomerList"
+                         :file-list="fileList"
+                         :auto-upload="false"
+                         :on-success="customerSuc"
+                         :on-error="customerErr"
+                         :before-upload="customerBef"
+                         multiple
+                         :limit="1">
+                     <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+                     <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传</el-button>
+                     <div slot="tip" class="el-upload__tip">只能上传excel</div>
+                 </el-upload>
+             </el-col>
+        </el-row>
+        <el-row class="tac">
+            <el-col :span="18">
+            <span>
+                <el-input v-model="keyword" style="width:30%" placeholder="输入客户信息(客户手机/名字/编号)搜索"></el-input>
+                <el-button type="primary" @click="getCustomerList()">确定</el-button>
+
+            </span>
+
+                <template>
+                    <el-table
+                            :data="customerList"
+                    >
+                        <el-table-column
+                                prop="name"
+                                label="客户姓名"
+                                >
+                             <template slot-scope="scope">
+                                <el-input v-if="scope.row.status" v-model="scope.row.name"></el-input>
+                                <span v-else>{{scope.row.name}}</span>
+                            </template>
+
+                        </el-table-column>
+                        <el-table-column
+                                prop="phone"
+                                label="客户手机"
+                        >
+                        </el-table-column>
+                        <el-table-column
+                                prop="customerNo"
+                                label="客户编号">
+                        </el-table-column>
+                        <el-table-column
+                                prop="money"
+                                label="客户余额">
+                        </el-table-column>
+                        <el-table-column
+                                prop="gender"
+                                label="客户性别">
+                        </el-table-column>
+                        <el-table-column
+                                prop="birthDate"
+                                label="出生日期"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                prop="remark"
+                                label="客户备注">
+                        </el-table-column>
+                        <el-table-column
+                                prop="createDate"
+                                label="创建时间"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                fixed="right"
+                                label="操作"
+                                width="100"
+                                v-if="isBalance"
+                        >
+
+                            <template slot-scope="scope" >
+                                <el-button v-if="customerList_f"
+                                           size="small"
+                                           type="text"
+                                           @click="openBalanceLog(scope.row)"
+                                >添加消费
+                                </el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </el-col>
+        </el-row>
+    </div>
+
+    <!--添加客户-->
+    <div v-show="addCustomer_f" class="border-left" style="width:30%">
+        <el-row :gutter="20">
+                <font style="color:red">*</font>
+                <span>客户姓名</span>
+                <el-input type="text" v-model="customer.name"  clearable></el-input>
+        </el-row>
+        <el-row :gutter="20">
+            <font style="color:red">*</font>
+            <span>客户手机</span>
+            <el-input type="text" v-model="customer.phone" placeholder="" clearable></el-input>
+        </el-row>
+        <el-row :gutter="20">
+            <font style="color:red">*</font>
+            <span>客户余额</span>
+            <el-input type="text" oninput = "value=value.replace(/[^\d]/g,'')" v-model="customer.money" placeholder="" clearable></el-input>
+        </el-row>
+        <el-row :gutter="20">
+            <font style="color:red">*</font>
+            <span>客户编号</span>
+            <el-input type="text" v-model="customer.customerNo" placeholder="" clearable></el-input>
+        </el-row>
+        <el-row :gutter="20">
+            <span>密码</span>
+            <el-input type="text" v-model="customer.password" placeholder="默认123456" clearable></el-input>
+        </el-row>
+        <el-row :gutter="20">
+            <span>确认密码</span>
+            <el-input type="text" v-model="customer.password2" placeholder="默认123456" clearable></el-input>
+        </el-row>
+        <el-row :gutter="20">
+            <span>客户性别</span>
+            <el-select v-model="customer.gender" clearable placeholder="客户性别">
+                <el-option
+                        v-for="item in genderList"
+                        :key="item.type"
+                        :label="item.name"
+                        :value="item.type">
+                </el-option>
+            </el-select>
+        </el-row>
+        <el-row :gutter="20">
+            <div class="block">
+                <span class="demonstration">出生日期</span>
+                <el-date-picker
+                        v-model="customer.birthDate"
+                        type="date"
+                        placeholder="选择日期">
+                </el-date-picker>
+            </div>
+        </el-row>
+        <el-row :gutter="20">
+            <span>备注</span>
+            <el-input type="text" v-model="customer.remark" placeholder="" clearable></el-input>
+        </el-row>
+        <el-button style="width:61.80%" type="primary"  @click="addCustomer()">确定</el-button>
+    </div>
+
+    <div v-show="serviceSet_f" class="border-left">
+        <el-row class="tac">
+            <el-col :span="18">
+            <span>
+                <el-input v-model="keyword" style="width:15%" placeholder="输入项目名称搜索"></el-input>
+                <el-button type="primary" @click="getCustomerList()">确定</el-button>
+                <el-button style="margin-left:100px" type="primary"  @click="addProductHtml()">添加消费项目</el-button>
+            </span>
+                <template>
+                    <el-table
+                            :data="productList"
+                    >
+                        <el-table-column
+                                prop="name"
+                                label="项目名称"
+                        >
+
+                        </el-table-column>
+
+                        <el-table-column
+                                prop="remark"
+                                label="项目备注"
+                        >
+
+                        </el-table-column>
+
+                        <el-table-column
+                                prop="createDate"
+                                label="创建时间"
+                                width="200">
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </el-col>
+        </el-row>
+    </div>
+
+
+</div>
 </body>
+
 </html>

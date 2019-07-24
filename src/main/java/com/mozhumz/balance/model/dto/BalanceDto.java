@@ -2,6 +2,7 @@ package com.mozhumz.balance.model.dto;
 
 import com.hyj.util.anno.IsNeed;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.List;
@@ -18,12 +19,20 @@ public class BalanceDto {
     @IsNeed(flag = true)
     private Double money;
 
-    private List<Long> productIds;
+    private List<ProductUserDto> productUserList;
 
     @IsNeed(flag = true)
     private Integer type;
 
     private String remark;
     @IsNeed(flag = true)
-    private String doName;
+    @ApiModelProperty(value = "操作员工userId")
+    private String doUserId;
+
+    @ApiModelProperty(value = "客户密码")
+    private String password;
+
+    @ApiModelProperty(value = "操作员工密码")
+    @IsNeed(flag = true)
+    private String empPassword;
 }

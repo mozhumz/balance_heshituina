@@ -1,8 +1,12 @@
 package com.mozhumz.balance.service.impl;
 
+import cn.afterturn.easypoi.excel.ExcelImportUtil;
+import cn.afterturn.easypoi.excel.entity.ImportParams;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.hyj.util.exception.BaseException;
 import com.hyj.util.param.CheckParamsUtil;
+import com.hyj.util.web.JsonResponse;
 import com.mozhumz.balance.enums.ErrorCode;
 import com.mozhumz.balance.model.dto.BalanceDto;
 import com.mozhumz.balance.model.entity.Customer;
@@ -19,12 +23,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
-import top.lshaci.framework.common.exception.BaseException;
-import top.lshaci.framework.excel.handler.POIExcelUploadHandler;
-import top.lshaci.framework.web.model.JsonResponse;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -45,66 +48,95 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerMapper, Customer> 
 
     /**
      * 导入Excel-添加客户
+     *
      * @param file
      * @return
      */
     @Override
     @Transactional
     public JsonResponse addCustomer(MultipartFile file) {
-        int okNum=0;
-        int noNum=0;
+        int okNum = 0;
+        int noNum = 0;
         try {
-            List<Customer> list= POIExcelUploadHandler.excel2Entities(file.getInputStream(),Customer.class);
-            if(CollectionUtils.isEmpty(list)){
+            //TODO 换成poi
+            ImportParams params = new ImportParams();
+//            params.setTitleRows(1);
+            params.setHeadRows(1);
+            List<Customer> list = ExcelImportUtil.importExcel(
+                    file.getInputStream(),
+                    Customer.class, params);
+            if (CollectionUtils.isEmpty(list)) {
                 return JsonResponse.success(null);
             }
-            for(Customer customer:list){
-                try {
-                    CheckParamsUtil.checkObj(customer);
-                    if(customer.getMoney()<0){
-                        continue;
-                    }
-                    customer.setPassword(MD5Util.getDefaultBalancePwd());
-                    save(customer);
-                    okNum++;
-                }catch (DuplicateKeyException e){
-                    throw new BaseException(ErrorCode.CUSTOMER_PHONE_ERR.desc+":"+customer.getPhone());
-                }catch (Exception e){
-                    continue;
-                }
+            for (Customer customer : list) {
+                if (saveCustomer(customer)) continue;
+                okNum++;
 
             }
-            noNum=list.size()-okNum;
-        } catch (IOException e) {
+            noNum = list.size() - okNum;
+        }catch (BaseException e){
+
+            throw e;
+        }
+        catch (Exception e) {
             e.printStackTrace();
-            log.error("addCustomer-err:"+e);
+            log.error("addCustomer-err:" + e);
             throw new BaseException(ErrorCode.CUSTOMER_ADD_ERR.desc);
         }
 
-        return JsonResponse.success("成功条数："+okNum+",失败条数："+noNum);
+        return JsonResponse.success("成功条数：" + okNum + ",失败条数：" + noNum);
+    }
+
+    /**
+     * 添加客户
+     *
+     * @param customer
+     * @return
+     */
+    public boolean saveCustomer(Customer customer) {
+        CheckParamsUtil.checkObj(customer);
+        if (customer.getMoney() < 0) {
+            log.warn("saveCustomer-getMoney() < 0:" + customer.getMoney());
+            return true;
+        }
+        if (CheckParamsUtil.check(customer.getPassword())) {
+            customer.setPassword(MD5Util.md5(customer.getPassword(), MD5Util.BALANCE_KEY));
+        } else {
+            customer.setPassword(MD5Util.getDefaultBalancePwd());
+        }
+        customer.setCreateDate(new Date());
+        customer.setUpdateDate(new Date());
+        try {
+            save(customer);
+        } catch (DuplicateKeyException e) {
+                throw new BaseException(ErrorCode.CUSTOMER_PHONE_ERR.desc + ":" + customer.getPhone());
+        }
+        return false;
     }
 
 
     /**
      * 获取客户列表
+     *
      * @param customerQo
      * @return
      */
     @Override
     public JsonResponse getCustomerList(CustomerQo customerQo) {
-        Page page=new Page(customerQo.getPage(),customerQo.getSize());
+        Page page = new Page(customerQo.getPage(), customerQo.getSize());
 
-        return JsonResponse.success(customerMapper.findCustomerList(page,customerQo));
+        return JsonResponse.success(customerMapper.findCustomerList(page, customerQo));
     }
 
     /**
      * 获取客户详情
+     *
      * @param customerId
      * @return
      */
     @Override
     public JsonResponse getCustomer(Long customerId) {
-        if(customerId==null){
+        if (customerId == null) {
             JsonResponse.success(null);
         }
 
@@ -113,12 +145,13 @@ public class CustomerServiceImpl extends ServiceImpl<ICustomerMapper, Customer> 
 
     /**
      * 更新客户信息
+     *
      * @param customer
      * @return
      */
     @Override
     public JsonResponse updateCustomer(Customer customer) {
-        if(customer.getId()==null){
+        if (customer.getId() == null) {
             throw new BaseException(ErrorCode.PARAM_ERR.desc);
         }
         customer.setUpdateDate(new Date());

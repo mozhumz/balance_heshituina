@@ -1,10 +1,14 @@
 package com.mozhumz.balance.web.controller;
 
+import com.hyj.util.exception.BaseException;
+import com.hyj.util.web.JsonResponse;
+import com.mozhumz.balance.enums.ErrorCode;
 import com.mozhumz.balance.model.dto.BalanceDto;
 import com.mozhumz.balance.model.entity.Customer;
 import com.mozhumz.balance.model.entity.Product;
 import com.mozhumz.balance.model.qo.BalanceLogQo;
 import com.mozhumz.balance.model.qo.CustomerQo;
+import com.mozhumz.balance.model.qo.ProductQo;
 import com.mozhumz.balance.service.ICustomerBalanceLogService;
 import com.mozhumz.balance.service.ICustomerService;
 import com.mozhumz.balance.service.IProductService;
@@ -14,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.lshaci.framework.web.model.JsonResponse;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +60,7 @@ public class BalanceController {
     @RequestMapping(value = "/addProduct", method = RequestMethod.POST)
     public JsonResponse addProduct(@RequestBody Product product) {
 
-        return JsonResponse.success(productService.addProduct(product));
+        return productService.addProduct(product);
 
     }
 
@@ -65,7 +68,7 @@ public class BalanceController {
     @RequestMapping(value = "/deleteProduct", method = RequestMethod.POST)
     public JsonResponse deleteProduct(@RequestBody Product product) {
 
-        return JsonResponse.success(productService.deleteProduct(product));
+        return productService.deleteProduct(product);
 
     }
 
@@ -73,64 +76,80 @@ public class BalanceController {
     @RequestMapping(value = "/updateProduct", method = RequestMethod.POST)
     public JsonResponse updateProduct(@RequestBody Product product) {
 
-        return JsonResponse.success(productService.updateProduct(product));
+        return productService.updateProduct(product);
 
     }
 
     @ApiOperation(value = "获取所有服务项目")
     @RequestMapping(value = "/getAllProductList", method = RequestMethod.POST)
-    public JsonResponse getAllProductList() {
+    public JsonResponse getAllProductList(@RequestBody ProductQo productQo) {
 
-        return JsonResponse.success(productService.getAllProductList());
-
+        return productService.getAllProductList(productQo);
     }
 
     @ApiOperation(value = "获取服务项目")
     @RequestMapping(value = "/getProduct", method = RequestMethod.POST)
     public JsonResponse getProduct(@RequestBody Product product) {
-        return JsonResponse.success(productService.getProduct(product));
+        return productService.getProduct(product);
 
     }
 
-    @ApiOperation(value = "导入Excel-添加用户余额记录")
+    @ApiOperation(value = "导入Excel-添加客户余额记录")
     @RequestMapping(value = "/addCustomerList", method = RequestMethod.POST)
     public JsonResponse addCustomerList(@RequestBody MultipartFile file) {
-        return JsonResponse.success(customerService.addCustomer(file));
+        return customerService.addCustomer(file);
+
+    }
+
+    @ApiOperation(value = "添加客户")
+    @RequestMapping(value = "/addCustomer", method = RequestMethod.POST)
+    public JsonResponse addCustomer(@RequestBody Customer customer) {
+        boolean f=customerService.saveCustomer(customer);
+        if(f){
+            throw new BaseException(ErrorCode.CUSTOMER_MONEY_ERR.code,ErrorCode.CUSTOMER_MONEY_ERR.desc);
+        }
+        return JsonResponse.success(customer);
 
     }
 
     @ApiOperation(value = "获取客户详情")
     @RequestMapping(value = "/getCustomer", method = RequestMethod.POST)
-    public JsonResponse getCustomer(@RequestBody Long id) {
-        return JsonResponse.success(customerService.getCustomer(id));
+    public JsonResponse getCustomer(@RequestBody Customer customer) {
+        return customerService.getCustomer(customer.getId());
 
     }
 
     @ApiOperation(value = "修改客户信息")
     @RequestMapping(value = "/updateCustomer", method = RequestMethod.POST)
     public JsonResponse updateCustomer(@RequestBody Customer customer) {
-        return JsonResponse.success(customerService.updateCustomer(customer));
+        return customerService.updateCustomer(customer);
 
     }
 
     @ApiOperation(value = "获取客户列表")
     @RequestMapping(value = "/getCustomerList", method = RequestMethod.POST)
     public JsonResponse getCustomerList(@RequestBody CustomerQo customerQo) {
-        return JsonResponse.success(customerService.getCustomerList(customerQo));
+        return customerService.getCustomerList(customerQo);
 
     }
 
     @ApiOperation(value = "客户充值/消费")
     @RequestMapping(value = "/addBalanceLog", method = RequestMethod.POST)
     public JsonResponse addBalanceLog(@RequestBody BalanceDto balanceDto) {
-        return JsonResponse.success(customerBalanceLogService.addBalanceLog(balanceDto));
+        return customerBalanceLogService.addBalanceLog(balanceDto);
     }
 
 
-    @ApiOperation(value = "客户充值/消费")
+    @ApiOperation(value = "获取客户充值/消费记录列表")
     @RequestMapping(value = "/getBalanceLogList", method = RequestMethod.POST)
     public JsonResponse getBalanceLogList(@RequestBody BalanceLogQo balanceLogQo) {
-        return JsonResponse.success(customerBalanceLogService.getBalanceLogList(balanceLogQo));
+        return customerBalanceLogService.getBalanceLogList(balanceLogQo);
+    }
+
+    @ApiOperation(value = "修改客户密码")
+    @RequestMapping(value = "/getBalanceLogList", method = RequestMethod.POST)
+    public JsonResponse changeCustomerPwd(@RequestBody BalanceLogQo balanceLogQo) {
+        return null;
     }
 
 

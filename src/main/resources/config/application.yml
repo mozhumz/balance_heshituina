@@ -1,5 +1,9 @@
 # spring
 spring:
+  rabbitmq:
+    addresses: 127.0.0.1
+    username: guest
+    password: guest
   # profiles
   profiles:
     active: dev

@@ -8,6 +8,7 @@
         <result column="name" property="name" />
         <result column="createDate" property="createDate" />
         <result column="updateDate" property="updateDate" />
+        <result column="remark" property="remark" />
     </resultMap>
 
 </mapper>

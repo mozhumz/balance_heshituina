@@ -1,8 +1,9 @@
 package com.mozhumz.balance.service;
 
+import com.hyj.util.web.JsonResponse;
 import com.mozhumz.balance.model.entity.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
-import top.lshaci.framework.web.model.JsonResponse;
+import com.mozhumz.balance.model.qo.ProductQo;
 
 /**
  * <p>
@@ -21,5 +22,5 @@ public interface IProductService extends IService<Product> {
 
     JsonResponse getProduct(Product product);
 
-    JsonResponse getAllProductList();
+    JsonResponse getAllProductList(ProductQo productQo );
 }

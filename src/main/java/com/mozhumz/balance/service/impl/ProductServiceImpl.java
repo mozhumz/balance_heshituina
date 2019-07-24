@@ -1,16 +1,18 @@
 package com.mozhumz.balance.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.hyj.util.exception.BaseException;
 import com.hyj.util.param.CheckParamsUtil;
+import com.hyj.util.web.JsonResponse;
 import com.mozhumz.balance.enums.ErrorCode;
 import com.mozhumz.balance.model.entity.Product;
 import com.mozhumz.balance.mapper.IProductMapper;
+import com.mozhumz.balance.model.qo.ProductQo;
 import com.mozhumz.balance.service.IProductService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.lshaci.framework.common.exception.BaseException;
-import top.lshaci.framework.web.model.JsonResponse;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -61,7 +63,12 @@ public class ProductServiceImpl extends ServiceImpl<IProductMapper, Product> imp
         if(product==null||!CheckParamsUtil.check(product.getId()+"",product.getName())){
             throw new BaseException(ErrorCode.PARAM_ERR.desc);
         }
-        productMapper.updateById(product);
+        try {
+            productMapper.updateById(product);
+        }catch (DuplicateKeyException e){
+            throw new BaseException(ErrorCode.PRODUCT_NAME_ERR.desc);
+        }
+
         return JsonResponse.success(null);
     }
 
@@ -75,8 +82,14 @@ public class ProductServiceImpl extends ServiceImpl<IProductMapper, Product> imp
     }
 
     @Override
-    public JsonResponse getAllProductList() {
-
-        return JsonResponse.success(productMapper.selectList(null));
+    public JsonResponse getAllProductList(ProductQo productQo) {
+        QueryWrapper<Product> queryWrapper=new QueryWrapper();
+        if(productQo.getId()!=null){
+            queryWrapper.eq("id",productQo.getId());
+        }
+        if(productQo.getName()!=null){
+            queryWrapper.and(wrapper->wrapper.like("name",productQo.getName()));
+        }
+        return JsonResponse.success(productMapper.selectList(queryWrapper));
     }
 }

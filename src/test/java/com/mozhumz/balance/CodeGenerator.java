@@ -22,6 +22,9 @@ import java.util.Properties;
  */
 public class CodeGenerator {
 
+    public static String[]skipTables={"t_role","t_balance_log_product","t_balance_log_user","t_customer",
+            "t_product","t_customer_balance_log","t_user","t_user_role"};
+
     /**
      * Project package
      */
@@ -130,7 +133,7 @@ public class CodeGenerator {
         strategy.setNaming(NamingStrategy.underline_to_camel);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setEntityLombokModel(true);
-//        strategy.setExclude("no");
+        strategy.setExclude(skipTables);
         strategy.setTablePrefix("t_");
 
         mpg.setGlobalConfig(gc);

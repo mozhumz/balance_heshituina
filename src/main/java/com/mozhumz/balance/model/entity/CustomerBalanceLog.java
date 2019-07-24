@@ -43,8 +43,6 @@ public class CustomerBalanceLog extends Model<CustomerBalanceLog> {
     @ApiModelProperty(value = "客户余额")
     private Double money;
 
-    @TableField("productIdStr")
-    private String productIdStr;
 
     @ApiModelProperty(value = "余额变动类型：1 消费 2 充值")
     private Integer type;
@@ -64,9 +62,9 @@ public class CustomerBalanceLog extends Model<CustomerBalanceLog> {
     @TableField("doUserName")
     @ApiModelProperty(value = "操作账号")
     private String doUserName;
-    @TableField("doName")
-    @ApiModelProperty(value = "实际操作人名字")
-    private String doName;
+    @TableField("doUserId")
+    @ApiModelProperty(value = "实际操作人userId")
+    private String doUserId;
 
 
     @Override

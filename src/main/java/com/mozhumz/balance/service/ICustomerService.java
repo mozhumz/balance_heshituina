@@ -1,13 +1,10 @@
 package com.mozhumz.balance.service;
 
-import com.mozhumz.balance.model.dto.BalanceDto;
+import com.hyj.util.web.JsonResponse;
 import com.mozhumz.balance.model.entity.Customer;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.mozhumz.balance.model.entity.Product;
-import com.mozhumz.balance.model.qo.BalanceLogQo;
 import com.mozhumz.balance.model.qo.CustomerQo;
 import org.springframework.web.multipart.MultipartFile;
-import top.lshaci.framework.web.model.JsonResponse;
 
 /**
  * <p>
@@ -44,6 +41,6 @@ public interface ICustomerService extends IService<Customer> {
     JsonResponse updateCustomer(Customer customer);
 
 
-
+    boolean saveCustomer(Customer customer);
 
 }

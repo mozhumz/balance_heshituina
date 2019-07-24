@@ -1,18 +1,25 @@
 package com.mozhumz.balance.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import com.hyj.util.config.GsonConfig;
+import com.hyj.util.exception.BaseException;
+import com.hyj.util.param.CheckParamsUtil;
+import com.hyj.util.web.GsonUtil;
 import com.mozhumz.balance.constant.CommonConstant;
+import com.mozhumz.balance.enums.ErrorCode;
 import com.mozhumz.balance.model.dto.SessionUser;
 import lombok.extern.slf4j.Slf4j;
-import net.sf.json.JSONObject;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import top.lshaci.framework.web.exception.LoginException;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.time.Duration;
+import java.util.Date;
 
 /**
  * @author huyuanjia
@@ -22,6 +29,9 @@ import java.time.Duration;
 @Slf4j
 public class SessionUtil {
     public static RedisTemplate redisTemplate;
+    public static Gson gson = GsonUtil.gson;
+
+
 
     @Resource
     public void setRedisTemplate(RedisTemplate redisTemplate){
@@ -44,16 +54,19 @@ public class SessionUtil {
      */
     public static SessionUser getLoginUser(){
         String token= (String) getSession().getAttribute(CommonConstant.token);
-        if(token==null){
-            throw new LoginException();
+        if(!CheckParamsUtil.check(token)){
+            throw new BaseException(ErrorCode.LOGIN_EXP_ERR.desc,ErrorCode.LOGIN_EXP_ERR.code);
         }
-        JSONObject jsonObject= (JSONObject) redisTemplate.opsForValue().get(CommonConstant.globalSessionUser+token);
-        SessionUser userDto= (SessionUser) JSONObject.toBean(jsonObject,SessionUser.class);
-        return userDto;
+        String json= (String) redisTemplate.opsForValue().get(CommonConstant.globalSessionUser+token);
+        if(!CheckParamsUtil.check(json)){
+            throw new BaseException(ErrorCode.LOGIN_EXP_ERR.desc,ErrorCode.LOGIN_EXP_ERR.code);
+        }
+        return gson.fromJson(json,new TypeToken<SessionUser>(){}.getType());
     }
 
     public static void setSessionUser(Long sessionSeconds,SessionUser userDto){
         Duration duration = Duration.ofSeconds(sessionSeconds);
-        redisTemplate.opsForValue().set(CommonConstant.globalSessionUser + userDto.getToken(), userDto, duration);
+        redisTemplate.opsForValue().set(CommonConstant.globalSessionUser +userDto.getToken(),
+                gson.toJson(userDto),duration);
     }
 }

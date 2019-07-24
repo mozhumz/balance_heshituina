@@ -1,5 +1,7 @@
 package com.mozhumz.balance.model.entity;
 
+import cn.afterturn.easypoi.excel.annotation.Excel;
+import cn.afterturn.easypoi.excel.annotation.ExcelTarget;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
@@ -14,7 +16,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import top.lshaci.framework.excel.annotation.UploadExcelTitle;
 
 /**
  * <p>
@@ -29,6 +30,7 @@ import top.lshaci.framework.excel.annotation.UploadExcelTitle;
 @Accessors(chain = true)
 @TableName("t_customer")
 @ApiModel(value="Customer对象", description="客户信息表")
+@ExcelTarget("Customer")
 public class Customer extends Model<Customer> {
 
     private static final long serialVersionUID = 1L;
@@ -37,17 +39,17 @@ public class Customer extends Model<Customer> {
     private Long id;
 
     @ApiModelProperty(value = "客户姓名")
-    @UploadExcelTitle(value = "姓名")
+    @Excel(name = "姓名")
     @IsNeed(flag = true)
     private String name;
 
     @ApiModelProperty(value = "客户手机")
-    @UploadExcelTitle(value = "手机")
+     @Excel(name = "手机")
     @IsNeed(flag = true)
     private String phone;
 
     @ApiModelProperty(value = "客户余额")
-    @UploadExcelTitle(value = "余额")
+    @Excel(name = "余额")
     @IsNeed(flag = true)
     private Double money;
 
@@ -56,7 +58,7 @@ public class Customer extends Model<Customer> {
 
     @ApiModelProperty(value = "客户编号")
     @TableField("customerNo")
-    @UploadExcelTitle(value = "编号")
+    @Excel(name = "编号")
     @IsNeed(flag = true)
     private String customerNo;
 
