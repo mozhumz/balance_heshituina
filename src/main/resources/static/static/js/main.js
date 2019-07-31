@@ -13,7 +13,8 @@
  	 serviceSet_f:false,
  	 welcomeUser:'',
  	 keyword:'',
- 	 customer:{name:'',phone:'',money:'',customerNo:'',gender:null,birthDate:null,remark:'',password:null,password2:null},
+ 	 customer:{name:'',phone:'',money:'',customerNo:'',gender:null,birthDate:null,remark:'',password:null,password2:null,
+ 	    email:null,doUserId:null,doPassword:null},
  	 balanceLog:{customerId:null,money:null,productIds:[],type:null,remark:null,doName:null},
  	 productList:[],
      addProd:{name:null},
@@ -22,7 +23,34 @@
      fileList:[],
      genderList:[{type:1,name:'男'},{type:2,name:'女'}],
      isAdmin:false,
-     isBalance:false
+     isBalance:false,
+     lazyBtn_f:false,
+     //操作人列表
+      doUserList:[],
+      rules: {
+               name: [
+                                { required: true, message: '请输入姓名', trigger: 'blur' },
+                                { min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur' }
+                              ],
+                phone: [
+                            { required: true, message: '请输入手机', trigger: 'blur' },
+                            { min: 8, max: 15, message: '长度在 8 到 15 个字符', trigger: 'blur' }
+                        ],
+                 money: [
+                   { required: true, message: '请输入余额', trigger: 'blur' }
+                 ],
+                 customerNo: [
+                          { required: true, message: '请输入编号', trigger: 'blur' }
+                        ],
+
+                doUserId: [
+                          { required: true, message: '请选择操作人', trigger: 'change' }
+                        ],
+                doPassword: [
+                          { required: true, message: '请输入操作密码', trigger: 'blur' }
+                        ]
+             }
+
    },
 //   filters:{
 //
@@ -74,6 +102,29 @@
                     type: type
                 });
              },
+         open2(msg) {
+                      var type='error';
+                      this.$message({
+                          message: msg,
+                          type: type
+                      });
+                   },
+        disableBtn(type){
+            if(!type){
+              mainV.lazyBtn_f=true;
+            }else{
+              mainV.sendCodeBtn_f=true;
+            }
+          },
+          enableBtn(type){
+            setTimeout(function(){
+                if(!type){
+                  mainV.lazyBtn_f=false;
+                }else{
+                  mainV.sendCodeBtn_f=false;
+                }
+              },1000);
+        },
         handleEdit(index, row) {
                console.log(index, row);
                console.log(row.status);
@@ -102,21 +153,41 @@
                     i.createDate=this.formatDate(i.createDate);
                     i.gender=getGender(i.gender);
                     i.birthDate=this.formatDate(i.birthDate);
+                    if(i.is0pwd==1){
+                        i.is0pwd="是";
+                    }else{
+                        i.is0pwd="否";
+                    }
                 }
             this.customerList=res.data.records;
          },
-         addCustomer(){
-            console.log("customer:"+this.customer);
-             if(this.customer.password){
-                this.customer.password=hex_md5(this.customer.password+DEFAULT_KEY);
-             }
-             var param=this.customer;
-             var res=ajax('POST',addCustomerUrl,param);
-             this.open(res);
+         addCustomer(formName){
+            this.disableBtn();
+            this.$refs[formName].validate((valid) => {
+              if (valid) {
+                if(!checkParams(this.customer.customerNo,this.customer.name,this.customer.phone)){
+                    this.enableBtn();
+                    this.open2(paramErr);
+                    return null;
+                }
+                 if(this.customer.password){
+                    this.customer.password=hex_md5(this.customer.password+DEFAULT_KEY);
+                 }
+                 var param=this.customer;
+                 var res=ajax('POST',addCustomerUrl,param);
+                 this.enableBtn();
+                 this.open(res);
+              } else {
+                this.enableBtn();
+                this.open2(paramErr);
+                return false;
+              }
+            });
+
 
           },
-          openBalanceLog(row){
-           open(openBalanceLogUrl+'?'+escape('id='+row.id+'&menuType=2'));
+          openBalanceLog(row,menuType){
+           open(openBalanceLogUrl+'?'+escape('id='+row.id+'&menuType='+menuType));
           },
          addBalanceLog(){
              var param=this.balanceLog;
@@ -134,6 +205,9 @@
               var res=ajax('POST',productListUrl,param);
               if(!res.status)
               this.open(res);
+              for(var i of res.data){
+                i.createDate=this.formatDate(i.createDate);
+              }
               this.productList=res.data;
           },
           addProductHtml(){
@@ -160,7 +234,9 @@
                      this.open(res);
             },
           submitUpload() {
+            this.disableBtn();
             this.$refs.upload.submit();
+            this.enableBtn();
           },
           handleRemove(file, fileList) {
             console.log(file, fileList);
@@ -194,6 +270,15 @@
                 return null;
              }
          },
+         getUserList(roleName){
+             var param={roleName:roleName,state:1};
+             var res=ajax('POST',userListUrl, param);
+             if(!res.status){
+                 this.open(res);
+                 return null;
+             }
+             return res.data;
+          },
          logOut(){
              window.location.href=logOutUrl;
           }
@@ -208,14 +293,26 @@
 var user=mainV.getLoginUser();
 if(user.role.name=="admin"){
     mainV.isAdmin=true;
-}else if(user.role.name=="扣款"){
+}else if(user.role.name=="普通管理员"){
     mainV.isBalance=true;
 }
 $("#welcomeUser").html(user.username);
 mainV.getCustomerList(1);
 
+mainV.doUserList=mainV.getUserList('普通管理员');
 
+ //回车键绑定
+ $("body").keydown(function() {
+     if (event.keyCode == "13") {//keyCode=13是回车键
+         if(mainV.customerList_f){
+            //客户列表
+            mainV.getCustomerList();
+         }else if(mainV.serviceSet_f){
+            mainV.getProductList();
+         }
 
+     }
+ });
 
  });
 

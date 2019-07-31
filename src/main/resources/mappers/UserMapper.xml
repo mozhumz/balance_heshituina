@@ -47,6 +47,9 @@
             <if test="qo.keyword!=null">
                 (a.username like #{qo.keyword} or a.phone like #{qo.keyword} or a.realName like #{qo.keyword}) and
             </if>
+            <if test="qo.state!=null">
+                a.state=#{qo.state} and
+            </if>
         </trim>
     </select>
 

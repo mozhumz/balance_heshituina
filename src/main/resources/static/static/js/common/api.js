@@ -27,5 +27,11 @@ var getProductUrl=pre+'/api/balance/getProduct';
 //获取用户列表
 var userListUrl=pre+'/api/user/getUserList';
 
+//修改客户
+var updateCustomerUrl=pre+'/api/balance/updateCustomer';
+//发送验证码
+var sendEmailCodeUrl=pre+'/api/balance/sendEmailCode';
+
 
 var ok='操作成功';
+var paramErr='必填项有空值';

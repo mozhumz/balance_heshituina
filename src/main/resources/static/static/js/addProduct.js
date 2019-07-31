@@ -16,9 +16,10 @@
  	 customer:{name:'',phone:'',money:'',customerNo:'',gender:null,birthDate:null,remark:'',password:null,password2:null},
  	 balanceLog:{customerId:null,money:null,productIds:[],type:null,remark:null,doName:null},
  	 productList:[],
-     addProd:{name:null},
+     addProd:{name:null,remark:null},
      deleteProd:{id:null},
-     updateProd:{id:null,name:null}
+     updateProd:{id:null,name:null},
+     lazyBtn_f:false,
    },
 //   filters:{
 //
@@ -59,17 +60,40 @@
              },
         //提示消息
         open(res) {
-                var msg=res.message;
-                var type='error';
-                if(res.status){
-                    type='success';
-                    msg=ok;
+            var msg=res.message;
+            var type='error';
+            if(res.status){
+                type='success';
+                msg=ok;
+            }
+            this.$message({
+                message: msg,
+                type: type
+            });
+         },
+         open2(msg) {
+           var type='error';
+           this.$message({
+               message: msg,
+               type: type
+           });
+        },
+        disableBtn(type){
+            if(!type){
+              mainV.lazyBtn_f=true;
+            }else{
+              mainV.sendCodeBtn_f=true;
+            }
+          },
+          enableBtn(type){
+            setTimeout(function(){
+                if(!type){
+                  mainV.lazyBtn_f=false;
+                }else{
+                  mainV.sendCodeBtn_f=false;
                 }
-                this.$message({
-                    message: msg,
-                    type: type
-                });
-             },
+              },1000);
+        },
         handleEdit(index, row) {
                console.log(index, row);
                console.log(row.status);
@@ -134,8 +158,15 @@
               this.productList=res.data;
           },
           addProduct(){
+                   this.disableBtn();
+                   if(!this.addProd.name){
+                        this.open2('项目名称不能为空');
+                        this.enableBtn();
+                        return false;
+                   }
                    var param=this.addProd;
                     var res=ajax('POST',addProductUrl,param);
+                    this.enableBtn();
                     this.open(res);
            },
           deleteProduct(){

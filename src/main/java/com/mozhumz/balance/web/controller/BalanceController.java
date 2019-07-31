@@ -1,9 +1,13 @@
 package com.mozhumz.balance.web.controller;
 
 import com.hyj.util.exception.BaseException;
+import com.hyj.util.param.CheckParamsUtil;
 import com.hyj.util.web.JsonResponse;
+import com.mozhumz.balance.constant.CommonConstant;
 import com.mozhumz.balance.enums.ErrorCode;
+import com.mozhumz.balance.feign.IUsermanageFeign;
 import com.mozhumz.balance.model.dto.BalanceDto;
+import com.mozhumz.balance.model.dto.SendEmailDto;
 import com.mozhumz.balance.model.entity.Customer;
 import com.mozhumz.balance.model.entity.Product;
 import com.mozhumz.balance.model.qo.BalanceLogQo;
@@ -12,8 +16,11 @@ import com.mozhumz.balance.model.qo.ProductQo;
 import com.mozhumz.balance.service.ICustomerBalanceLogService;
 import com.mozhumz.balance.service.ICustomerService;
 import com.mozhumz.balance.service.IProductService;
+import com.mozhumz.balance.utils.EmailUtil;
+import com.mozhumz.balance.utils.SessionUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @Api(value = "余额相关接口", description = "余额相关接口")
 @RequestMapping("/api/balance")
+@Slf4j
 public class BalanceController {
     @Resource
     private HttpServletRequest request;
@@ -45,6 +53,8 @@ public class BalanceController {
     private ICustomerBalanceLogService customerBalanceLogService;
     @Resource
     private IProductService productService;
+    @Resource
+    private IUsermanageFeign usermanageFeign;
 
 
     @ApiOperation(value = "退出")
@@ -104,7 +114,7 @@ public class BalanceController {
     @ApiOperation(value = "添加客户")
     @RequestMapping(value = "/addCustomer", method = RequestMethod.POST)
     public JsonResponse addCustomer(@RequestBody Customer customer) {
-        boolean f=customerService.saveCustomer(customer);
+        boolean f=customerService.saveCustomer(customer,null);
         if(f){
             throw new BaseException(ErrorCode.CUSTOMER_MONEY_ERR.code,ErrorCode.CUSTOMER_MONEY_ERR.desc);
         }
@@ -146,10 +156,30 @@ public class BalanceController {
         return customerBalanceLogService.getBalanceLogList(balanceLogQo);
     }
 
-    @ApiOperation(value = "修改客户密码")
-    @RequestMapping(value = "/getBalanceLogList", method = RequestMethod.POST)
-    public JsonResponse changeCustomerPwd(@RequestBody BalanceLogQo balanceLogQo) {
-        return null;
+
+    @ApiOperation(value = "发送验证码")
+    @RequestMapping(value = "/sendEmailCode", method = RequestMethod.POST)
+    public JsonResponse sendEmailCode(@RequestBody SendEmailDto sendEmailDto) {
+        log.info("sendEmailCode start");
+        if(!CheckParamsUtil.check(sendEmailDto.getReceiveEmail(),sendEmailDto.getCustomerId()+"")){
+            throw new BaseException(ErrorCode.PARAM_ERR.desc);
+        }
+        sendEmailDto.setTitle(CommonConstant.emailCodeTitle);
+        sendEmailDto.setKey(CommonConstant.customerCode+sendEmailDto.getCustomerId()+sendEmailDto.getReceiveEmail());
+        sendEmailDto.setContent(EmailUtil.getEmailCode(6));
+
+        return usermanageFeign.sendEmailCode(sendEmailDto);
+    }
+
+    @ApiOperation(value = "获取验证码")
+    @RequestMapping(value = "/getEmailCode", method = RequestMethod.POST)
+    public JsonResponse getEmailCode(@RequestBody SendEmailDto sendEmailDto) {
+        if(!CheckParamsUtil.check(sendEmailDto.getReceiveEmail(),sendEmailDto.getCustomerId()+"")){
+            throw new BaseException(ErrorCode.PARAM_ERR.desc);
+        }
+        return JsonResponse.success(SessionUtil.getRedisV(CommonConstant.customerCode+sendEmailDto.getCustomerId()
+                        +sendEmailDto.getReceiveEmail())
+                );
     }
 
 

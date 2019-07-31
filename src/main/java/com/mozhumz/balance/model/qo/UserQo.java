@@ -15,6 +15,8 @@ public class UserQo extends BaseQo {
 
     private String roleIdStr;
 
+    private Integer state;
+
 
     public void setKeyword(String keyword) {
         if(CheckParamsUtil.check(keyword))

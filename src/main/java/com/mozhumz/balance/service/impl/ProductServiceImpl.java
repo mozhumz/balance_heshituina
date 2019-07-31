@@ -87,8 +87,8 @@ public class ProductServiceImpl extends ServiceImpl<IProductMapper, Product> imp
         if(productQo.getId()!=null){
             queryWrapper.eq("id",productQo.getId());
         }
-        if(productQo.getName()!=null){
-            queryWrapper.and(wrapper->wrapper.like("name",productQo.getName()));
+        if(productQo.getKeyword()!=null){
+            queryWrapper.and(wrapper->wrapper.like("name",productQo.getKeyword()));
         }
         return JsonResponse.success(productMapper.selectList(queryWrapper));
     }

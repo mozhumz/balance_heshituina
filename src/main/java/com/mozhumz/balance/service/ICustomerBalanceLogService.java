@@ -28,4 +28,6 @@ public interface ICustomerBalanceLogService extends IService<CustomerBalanceLog>
      * @return
      */
     JsonResponse getBalanceLogList(BalanceLogQo balanceLogQo);
+
+    void checkDoUser(Long doUserId,String doPwd);
 }

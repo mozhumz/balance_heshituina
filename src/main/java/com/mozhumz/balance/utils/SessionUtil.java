@@ -69,4 +69,34 @@ public class SessionUtil {
         redisTemplate.opsForValue().set(CommonConstant.globalSessionUser +userDto.getToken(),
                 gson.toJson(userDto),duration);
     }
+
+    /**
+     * 设置redis KV
+     * @param k
+     * @param v
+     * @param seconds 失效秒值
+     */
+    public static void setRedisKV(String k,String v,long seconds){
+        Duration duration = Duration.ofSeconds(seconds);
+        redisTemplate.opsForValue().set(k,v,duration);
+    }
+
+    /**
+     * 根据key获取redis V
+     * @param k
+     * @return
+     */
+    public static String getRedisV(String k){
+        return (String) redisTemplate.opsForValue().get(k);
+    }
+
+    /**
+     * 根据客户邮箱和客户id获取验证码
+     * @param receiveEmail
+     * @param customerId
+     * @return
+     */
+    public static String getEmailCode(String receiveEmail,Long customerId){
+        return getRedisV(CommonConstant.customerCode+customerId+receiveEmail);
+    }
 }

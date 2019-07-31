@@ -26,13 +26,13 @@ public class BalanceDto {
 
     private String remark;
     @IsNeed(flag = true)
-    @ApiModelProperty(value = "操作员工userId")
-    private String doUserId;
+    @ApiModelProperty(value = "操作人userId")
+    private Long doUserId;
 
     @ApiModelProperty(value = "客户密码")
     private String password;
 
-    @ApiModelProperty(value = "操作员工密码")
+    @ApiModelProperty(value = "操作人密码")
     @IsNeed(flag = true)
-    private String empPassword;
+    private String doPassword;
 }

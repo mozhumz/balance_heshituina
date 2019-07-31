@@ -22,4 +22,7 @@ public class SendEmailDto {
 
     @ApiModelProperty(value = "存入redis的key")
     private String key;
+
+    @ApiModelProperty(value = "客户id")
+    private Long customerId;
 }

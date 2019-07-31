@@ -21,11 +21,14 @@ public class MD5Util {
      * @throws Exception
      */
     public static String md5(String text, String key) {
+        if(!CheckParamsUtil.check(text)){
+            return null;
+        }
         if (!CheckParamsUtil.check(key)) {
             return DigestUtils.md5DigestAsHex(text.getBytes());
         }
         //加密后的字符串
-        return DigestUtils.md5DigestAsHex((text + key).getBytes()).toString();
+        return DigestUtils.md5DigestAsHex((text + key).getBytes());
     }
 
     /**

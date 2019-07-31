@@ -159,24 +159,7 @@ public class CustomerBalanceLogServiceImpl extends ServiceImpl<ICustomerBalanceL
         if (customer == null) {
             throw new BaseException(ErrorCode.CUSTOMER_ERR.desc);
         }
-        User doUser = userMapper.selectById(balanceDto.getDoUserId());
-        if (doUser == null) {
-            throw new BaseException(ErrorCode.USER_NOT_EXIST_ERR.desc);
-        }
-        //判断该员工是否有扣款权限
-        Role role = getBalanceRole();
-        if (!doUser.getRoleIdStr().contains("," + role.getId() + ",")) {
-            throw new BaseException(ErrorCode.DOUSER_RIGHT_ERR.desc);
-        }
-
-        //操作员工密码校验
-        if (MD5Util.getDefaultPwd().equals(doUser.getPassword())
-                || MD5Util.getDefaultPwd().equals(doUser.getBalancePwd())) {
-            throw new BaseException(ErrorCode.DOUSER_PWD0_ERR.desc);
-        }
-        if (!MD5Util.checkPwd(balanceDto.getEmpPassword(), doUser.getBalancePwd())) {
-            throw new BaseException(ErrorCode.DOUSER_PWD_ERR.desc);
-        }
+        checkDoUser(balanceDto.getDoUserId(),balanceDto.getDoPassword());
 
         Double balance = 0.0;
         if (BalanceTypeEnum.consume.code == balanceDto.getType()) {
@@ -204,13 +187,45 @@ public class CustomerBalanceLogServiceImpl extends ServiceImpl<ICustomerBalanceL
     }
 
     /**
+     * 操作人校验
+     * @param doUserId
+     * @param doPwd
+     */
+    public void checkDoUser(Long doUserId,String doPwd) {
+        if(!CheckParamsUtil.check(doUserId+"",doPwd)){
+            throw new BaseException(ErrorCode.PARAM_ERR.desc);
+        }
+        QueryWrapper<User> queryWrapper=new QueryWrapper<>();
+        queryWrapper.eq("id",doUserId);
+        queryWrapper.eq("state",1);
+        User doUser=userMapper.selectOne(queryWrapper);
+        if (doUser == null) {
+            throw new BaseException(ErrorCode.USER_NOT_EXIST_ERR.desc);
+        }
+        //判断该员工是否有扣款权限
+        Role role = getBalanceRole();
+        if (!doUser.getRoleIdStr().contains("," + role.getId() + ",")) {
+            throw new BaseException(ErrorCode.DOUSER_RIGHT_ERR.desc);
+        }
+
+        //操作员工密码校验
+        if (MD5Util.getDefaultPwd().equals(doUser.getPassword())
+                || MD5Util.getDefaultPwd().equals(doUser.getBalancePwd())) {
+            throw new BaseException(ErrorCode.DOUSER_PWD0_ERR.desc);
+        }
+        if (!MD5Util.checkPwd(doPwd, doUser.getBalancePwd())) {
+            throw new BaseException(ErrorCode.DOUSER_PWD_ERR.desc);
+        }
+    }
+
+    /**
      * 获取扣款角色
      *
      * @return
      */
     private Role getBalanceRole() {
         QueryWrapper<Role> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("name", "扣款");
+        queryWrapper.eq("name", "普通管理员");
         Role role = roleMapper.selectOne(queryWrapper);
         if (role == null) {
             throw new BaseException(ErrorCode.BALANCE_ROLE_NOT_EXIST_ERR.desc);

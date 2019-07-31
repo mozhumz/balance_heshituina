@@ -108,12 +108,15 @@ background: linear-gradient(top,#656565,#4a4a4a);
                 class="el-menu-demo" mode="horizontal"
                 :default-active="menuActive"
         >
-            <el-menu-item index="1" @click="changeMenu(1)">
+            <el-menu-item  index="1" @click="changeMenu(1)">
                 <!--<i class="el-icon-menu"></i>-->
-                <span slot="title">客户详情</span>
+                <span slot="title">客户编辑</span>
             </el-menu-item>
-
-            <el-menu-item index="2" @click="changeMenu(2)">
+            <el-menu-item  index="4" @click="changeMenu(4)">
+                <!--<i class="el-icon-menu"></i>-->
+                <span slot="title">客户密码修改</span>
+            </el-menu-item>
+            <el-menu-item v-if="isBalance" index="2" @click="changeMenu(2)">
                 <!--<i class="el-icon-menu"></i>-->
                 <span slot="title">添加消费</span>
             </el-menu-item>
@@ -121,36 +124,97 @@ background: linear-gradient(top,#656565,#4a4a4a);
                 <!--<i class="el-icon-menu"></i>-->
                 <span slot="title">历史消费</span>
             </el-menu-item>
+
         </el-menu>
     </el-row>
 
-<!--    客户详情-->
-    <div v-show="customerDetail_f" class="border-left" style="width:20%;">
+<!--    客户编辑-->
+    <div v-show="customerDetail_f" class="border-left" style="width:35%;">
         <el-row >
-            <span>姓名：</span><el-input type="text" v-model="customer.name"  :readonly="true"></el-input>
+            <el-col :span="8">
+                <font style="color:red">*</font>
+                <span>姓名：</span><el-input type="text" v-model="customer.name"  ></el-input>
+            </el-col>
+            <el-col :span="2">&nbsp;</el-col>
+            <el-col :span="8">
+                <font style="color:red">*</font>
+                <span>手机：</span><el-input type="text" v-model="customer.phone"  ></el-input>
+            </el-col>
+
         </el-row>
         <el-row >
-            <span>客户手机：</span><el-input type="text" v-model="customer.phone"  :readonly="true"></el-input>
+            <el-col :span="8">
+                <span>邮箱：</span><el-input type="text" v-model="customer.email"  ></el-input>
+            </el-col>
+            <el-col :span="2">&nbsp;</el-col>
+            <el-col :span="8">
+                <font style="color:red">*</font>
+                <span>编号：</span><el-input type="text" v-model="customer.customerNo"  ></el-input>
+            </el-col>
+
         </el-row>
         <el-row >
-            <span>编号：</span><el-input type="text" v-model="customer.customerNo"  :readonly="true"></el-input>
+            <el-col :span="8">
+                <span>余额：</span><el-input  v-model="customer.money" type="text" :readonly="true"></el-input>
+            </el-col>
+            <el-col :span="2">&nbsp;</el-col>
+            <el-col :span="10">
+                <span>性别：</span>
+                <el-select v-model="customer.gender" clearable placeholder="客户性别">
+                    <el-option
+                            v-for="item in genderList"
+                            :key="item.type"
+                            :label="item.name"
+                            :value="item.type">
+                    </el-option>
+                </el-select>
+            </el-col>
+
         </el-row>
         <el-row >
-            <span>余额：</span><el-input  v-model="customer.money" type="text" :readonly="true"></el-input>
+            <el-col :span="8">
+                <div class="block">
+                    <span class="demonstration">出生日期</span>
+                    <el-date-picker
+                            v-model="customer.birthDate"
+                            type="date"
+                            placeholder="选择日期">
+                    </el-date-picker>
+                </div>
+            </el-col>
+            <el-col :span="2">&nbsp;</el-col>
+            <el-col :span="10">
+                <span>备注：</span><el-input  v-model="customer.remark" type="text" ></el-input>
+            </el-col>
+
         </el-row>
         <el-row >
-            <span>性别：</span><el-input  v-model="customer.gender" type="text" :readonly="true"></el-input>
-        </el-row>
-        <el-row >
-            <span>生日：</span><el-input  v-model="customer.birthDate" type="text" :readonly="true"></el-input>
-        </el-row>
-        <el-row >
-            <span>备注：</span><el-input  v-model="customer.remark" type="text" :readonly="true"></el-input>
-        </el-row>
-        <el-row >
-            <span>创建时间：</span><el-input  v-model="customer.createDate" type="text" :readonly="true"></el-input>
+            <el-button type="primary" :disabled="lazyBtn_f" @click="updateCustomer">确定</el-button>
         </el-row>
 
+    </div>
+<!--    客户密码-->
+    <div v-show="customerPwd_f" class="border-left" style="width:30%;">
+        <el-row>
+            <span>客户邮箱：</span><el-input  v-model="customer.email" :readonly="true" placeholder="请先到客户编辑设置邮箱"></el-input>
+            <el-button type="primary" @click="sendEmailCode" :disabled="sendCodeBtn_f">{{sendCodeTxt}}</el-button>
+
+        </el-row>
+        <el-row>
+            <font style="color:red">*</font>
+            <span>输入验证码：</span><el-input  v-model="customer.emailCode"  ></el-input>
+        </el-row>
+        <el-row>
+            <font style="color:red">*</font>
+            <span>新密码：</span><el-input  v-model="customer.password" type="password" ></el-input>
+        </el-row>
+        <el-row>
+            <font style="color:red">*</font>
+            <span>确认密码：</span><el-input  v-model="customer.password2" type="password" ></el-input>
+        </el-row>
+        <el-row >
+            <el-button type="primary" @click="changePwd" :disabled="lazyBtn_f">确定</el-button>
+        </el-row>
     </div>
 <!--        添加消费-->
     <div v-show="addBalanceLog_f" class="border-left" style="width:30%;">
@@ -188,7 +252,7 @@ background: linear-gradient(top,#656565,#4a4a4a);
         </el-row>
         <el-row >
             <font style="color:red">*</font>
-            <el-select clearable v-model="balanceLog.doUserId" placeholder="请选择操作员工">
+            <el-select clearable v-model="balanceLog.doUserId" placeholder="请选择操作人">
                 <el-option
                         v-for="item in empList"
                         :key="item.id"
@@ -199,7 +263,7 @@ background: linear-gradient(top,#656565,#4a4a4a);
         </el-row>
         <el-row >
             <font style="color:red">*</font>
-            <span>操作密码(电脑操作人对应的密码)</span>
+            <span>操作密码(操作人设置的操作密码)</span>
             <el-input type="text" v-model="balanceLog.empPassword" show-password clearable></el-input>
         </el-row>
         <el-row >
@@ -210,7 +274,7 @@ background: linear-gradient(top,#656565,#4a4a4a);
         <el-row >
             <span>备注：</span><el-input  v-model="balanceLog.remark" type="text" ></el-input>
         </el-row>
-        <el-button style="width:61.80%" type="primary"  @click="addBalanceLog()">确定</el-button>
+        <el-button style="width:61.80%" type="primary"  @click="addBalanceLog()" :disabled="lazyBtn_f">确定</el-button>
         </div>
     </div>
 

@@ -64,7 +64,7 @@ public class CustomerBalanceLog extends Model<CustomerBalanceLog> {
     private String doUserName;
     @TableField("doUserId")
     @ApiModelProperty(value = "实际操作人userId")
-    private String doUserId;
+    private Long doUserId;
 
 
     @Override

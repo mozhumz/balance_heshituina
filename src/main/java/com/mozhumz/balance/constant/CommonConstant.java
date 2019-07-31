@@ -17,7 +17,12 @@ public class CommonConstant {
      */
     public static  final String sessionUser="sessionUser";
 
+    /**
+     * 客户验证码前缀
+     */
+    public static final String customerCode="customerCode";
 
+    public static final String emailCodeTitle="何氏推拿-验证码";
 
 
 }

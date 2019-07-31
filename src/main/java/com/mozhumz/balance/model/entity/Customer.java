@@ -55,6 +55,8 @@ public class Customer extends Model<Customer> {
 
     @ApiModelProperty(value = "客户支付密码")
     private String password;
+    @ApiModelProperty(value = "客户支付密码是否为初始密码 1是 2否")
+    private Integer is0pwd;
 
     @ApiModelProperty(value = "客户编号")
     @TableField("customerNo")
@@ -80,6 +82,24 @@ public class Customer extends Model<Customer> {
 
     private Integer state;
 
+    private String email;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "邮箱验证码")
+    private String emailCode;
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "操作密码")
+    private String doPassword;
+
+
+    @TableField(exist = false)
+    @ApiModelProperty(value = "添加人名字")
+    private String doName;
+
+    @TableField("doUserId")
+    @ApiModelProperty(value = "添加人id")
+    private Long doUserId;
 
     @Override
     protected Serializable pkVal() {

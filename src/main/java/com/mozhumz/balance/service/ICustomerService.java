@@ -41,6 +41,6 @@ public interface ICustomerService extends IService<Customer> {
     JsonResponse updateCustomer(Customer customer);
 
 
-    boolean saveCustomer(Customer customer);
+    boolean saveCustomer(Customer customer,Integer type);
 
 }

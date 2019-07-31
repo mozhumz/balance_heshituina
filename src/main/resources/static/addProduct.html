@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>余额管理</title>
+    <title>余额管理-添加消费项目</title>
     <link rel="stylesheet" href="static/css/element-ui.css">
     <script src="static/js/common/vue.js"></script>
     <script src="static/js/common/jquery-3.4.1.min.js"></script>
@@ -62,7 +62,7 @@
                 <span>项目备注</span>
                 <el-input type="text" v-model="addProd.remark" placeholder=""  clearable></el-input>
             </el-row>
-            <el-button  type="primary"  @click="addProduct()">确定</el-button>
+            <el-button  type="primary"  @click="addProduct()" :disabled="lazyBtn_f">确定</el-button>
         </div>
     </div>
 

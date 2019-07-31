@@ -13,11 +13,11 @@ public class ProductQo extends BaseQo{
     private Long id;
 
     @ApiModelProperty(value = "消费项目名称")
-    private String name;
+    private String keyword;
 
 
-    public void setName(String name) {
-        if(CheckParamsUtil.check(name))
-        this.name = name;
+    public void setKeyword(String keyword) {
+        if(CheckParamsUtil.check(keyword))
+        this.keyword = keyword;
     }
 }

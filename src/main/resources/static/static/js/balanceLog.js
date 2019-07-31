@@ -57,21 +57,34 @@ if(menuType){
  	 balanceLogList_f:false,
  	 //客户详情
  	 customerDetail_f:true,
+ 	 //客户密码
+ 	 customerPwd_f:true,
  	 welcomeUser:'',
  	 keyword:'',
  	 customer:{name:'',phone:'',money:'',customerNo:'',gender:null,birthDate:null,remark:'',password:null,password2:null},
  	 balanceLog:{customerId:customerId,money:null,productUserList:[],type:null,remark:null,doUserId:null,password:null,empPassword:null},
- 	 customer:{name:null,phone:null,money:null,password:null,customerNo:null,gender:null,birthDate:null,remark:null,createDate:null},
+ 	 customer:{name:null,phone:null,money:null,password:null,password2:null,customerNo:null,gender:null,birthDate:null,
+ 	    remark:null,createDate:null,email:null,emailCode:null},
  	 customerBaseInfo:'客户基本信息(姓名，编号，手机)：',
  	 customerId:customerId,
  	 balanceLogList:[],
  	 //消费项目列表
- 	 productList:[{id:1,name:"test"},{id:2,name:"test2"},{id:3,name:"test3"},{id:4,name:"test4"}],
+ 	 productList:[],
  	 //服务员工列表
- 	 empList:[{id:1,username:'zhangsan',realName:'张三'},{id:2,username:'zhangsan2',realName:'张三2'}],
+ 	 empList:[],
  	 consumeTypeList:[{type:1,name:'消费'},{type:2,name:'充值'}],
+ 	 genderList:[{type:1,name:'男'},{type:2,name:'女'}],
  	 consumeType:null,
- 	 menuActive: menuType+''
+ 	 menuActive: menuType+'',
+ 	 isAdmin:false,
+     isBalance:false,
+     lazyBtn_f:false,
+     sendCodeBtn_f:false,
+     sendCodeTxt:'发送验证码（有效期为5分钟）',
+     sendCode_f:true,
+     code_time:60,
+     //操作人列表
+     doUserList:[]
 
 
    },
@@ -86,13 +99,27 @@ if(menuType){
                  	 this.balanceLogList_f=false;
                  	 this.customerDetail_f=true;
                  	 this.addBalanceLog_f=false;
+                 	 this.customerPwd_f=false;
                      this.getCustomer();
                      break;
+                case 4:
+                     //客户密码
+                     this.balanceLogList_f=false;
+                     this.customerDetail_f=false;
+                     this.addBalanceLog_f=false;
+                     this.customerPwd_f=true;
+                      break;
                 case 2:
                     //添加消费
+                    if(this.isBalance){
+
                      this.balanceLogList_f=false;
                      this.customerDetail_f=false;
                      this.addBalanceLog_f=true;
+                     this.customerPwd_f=false;
+                    }else{
+                        this.changeMenu(-1);
+                    }
                     break;
                 case 3:
                 //历史消费
@@ -100,11 +127,14 @@ if(menuType){
                      this.customerDetail_f=false;
                      this.addBalanceLog_f=false;
                      this.getBalanceLogList();
+                     this.customerPwd_f=false;
                     break;
                 default:
                     this.balanceLogList_f=false;
                      this.customerDetail_f=true;
                      this.addBalanceLog_f=false;
+                     this.customerPwd_f=false;
+                     this.menuActive="1";
                     break;
             }
         },
@@ -134,6 +164,22 @@ if(menuType){
                  message: msg,
                  type: type
              });
+          },
+          enableBtn(type){
+              setTimeout(function(){
+                  if(!type){
+                    mainV.lazyBtn_f=false;
+                  }else{
+                    mainV.sendCodeBtn_f=false;
+                  }
+                },1000);
+          },
+          disableBtn(type){
+            if(!type){
+              mainV.lazyBtn_f=true;
+            }else{
+              mainV.sendCodeBtn_f=true;
+            }
           },
         handleEdit(index, row) {
                console.log(index, row);
@@ -174,10 +220,83 @@ if(menuType){
              var res=ajax('POST',customerUrl,param);
              if(!res.status)
              this.open(res);
-             res.data.gender=getGender(res.data.gender);
-             res.data.createDate=this.formatDate(res.data.createDate);
-             res.data.birthDate=this.formatDate(res.data.birthDate);
+//             res.data.gender=getGender(res.data.gender);
+//             res.data.createDate=this.formatDate(res.data.createDate);
+//             res.data.birthDate=this.formatDate(res.data.birthDate);
              this.customer=res.data;
+
+          },
+          updateCustomer(){
+               this.disableBtn();
+              if(!checkParams(this.customer.customerNo,this.customer.name,this.customer.phone)){
+                  this.open2(paramErr);
+                  this.enableBtn();
+                  return null;
+              }
+              var param=this.customer;
+              var res=ajax('POST',updateCustomerUrl,param);
+              this.open(res);
+              this.enableBtn();
+
+          },
+          changePwd(){
+            this.disableBtn();
+            if(!checkParams(this.customer.password,this.customer.password2,this.customer.emailCode)){
+                this.open2(paramErr);
+                this.enableBtn();
+                return null;
+            }
+            if(this.customer.password!=this.customer.password2){
+                this.open2('两次输入的密码不一致');
+                this.enableBtn();
+                return null;
+            }
+            if(this.customer.password=="123456"){
+                this.open2('密码不能为初始密码：123456');
+                this.enableBtn();
+                return null;
+            }
+            this.customer.password=hex_md5(this.customer.password+DEFAULT_KEY);
+            this.updateCustomer();
+          },
+          //发送验证码（有效期为5分钟）
+          sendEmailCode(){
+
+              this.sendCodeBtn_f=true;
+              if(this.sendCode_f){
+                  var timer = setInterval(function () {
+
+                      if(mainV.code_time == 60 && mainV.sendCode_f){
+                          mainV.sendCode_f = false;
+                            if(!mainV.customer.email){
+                                  mainV.open2('该客户未设置邮箱，请先到客户编辑菜单设置');
+                                  mainV.sendCode_f = true;
+                                  mainV.code_time = 60;
+                                  clearInterval(timer);
+                                  mainV.enableBtn(1);
+                                  return null;
+                          }
+                          var param={receiveEmail:mainV.customer.email,customerId:mainV.customer.id};
+                          var res=ajax('POST',sendEmailCodeUrl,param);
+                          if(!res.status){
+                                 mainV.sendCode_f = true;
+                                mainV.code_time = 60;
+                                clearInterval(timer);
+                                mainV.enableBtn(1);
+                          }
+                          mainV.open(res);
+                    }else if(mainV.code_time == 0){
+                          mainV.sendCodeTxt='发送验证码（有效期为5分钟）';
+                          mainV.enableBtn(1);
+                          clearInterval(timer);
+                          mainV.code_time = 60;
+                          mainV.sendCode_f = true;
+                      }else {
+                         mainV.sendCodeTxt=mainV.code_time + " s 重新发送";
+                          mainV.code_time--;
+                      }
+                  },1000);
+               }
 
           },
           getPwd(pwd){
@@ -187,6 +306,7 @@ if(menuType){
             return null;
           },
          addBalanceLog(){
+             this.disableBtn();
              var list=[];
              var empList=[];
              var liList=$("#chooseDiv").children('li');
@@ -205,16 +325,19 @@ if(menuType){
 
              }
              if(isRepeat(empList)){
+                this.enableBtn();
                 this.open2('您选择的服务员工有重复数据');
                 return false;
              }
              if(this.balanceLog.type==1&&(!list||list.length==0)){
+                this.enableBtn();
                 this.open2('必须选择消费项目和服务员工');
                 return false;
              }
              //参数判空
             if(!checkParams(this.balanceLog.type,this.balanceLog.money,this.balanceLog.doUserId,
                 this.balanceLog.empPassword,this.balanceLog.password)){
+                this.enableBtn();
                 this.open2('必填项有空值');
                 return false;
             }
@@ -226,6 +349,7 @@ if(menuType){
              this.balanceLog.money=parseFloat(this.balanceLog.money);
              var param=this.balanceLog;
              var res=ajax('POST',addBalanceLogUrl,param);
+             this.enableBtn();
              this.open(res);
          },
         chooseProduct(items){
@@ -294,8 +418,16 @@ if(menuType){
                 return null;
             }
             this.empList=res.data;
+         },
+        getUserList(roleName){
+            var param={roleName:roleName,state:1};
+            var res=ajax('POST',userListUrl, param);
+            if(!res.status){
+                this.open(res);
+                return null;
+            }
+            return res.data;
          }
-
 
 
 
@@ -305,6 +437,11 @@ if(menuType){
 //登录信息
 var user=mainV.getLoginUser();
 $("#welcomeUser").html(user.username);
+if(user.role.name=="admin"){
+    mainV.isAdmin=true;
+}else if(user.role.name=="普通管理员"){
+    mainV.isBalance=true;
+}
 mainV.changeMenu(menuType);
 //客户信息
 mainV.getCustomer();
@@ -326,8 +463,18 @@ for(var p of mainV.productList){
  }
  $('.selectpicker').selectpicker('refresh');
  $('.selectpicker').selectpicker('render');
+mainV.doUserList=mainV.getUserList('普通管理员');
 
+//回车键绑定
+ $("body").keydown(function() {
+     if (event.keyCode == "13") {//keyCode=13是回车键
+         if(mainV.balanceLogList_f){
+            //客户列表
+            mainV.getBalanceLogList();
+         }
 
+     }
+ });
 
 
 
