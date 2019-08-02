@@ -53,7 +53,7 @@ public class SessionUtil {
      * @return
      */
     public static SessionUser getLoginUser(){
-        String token= (String) getSession().getAttribute(CommonConstant.token);
+        String token= (String) getSession().getAttribute(CommonConstant.balanceToken);
         if(!CheckParamsUtil.check(token)){
             throw new BaseException(ErrorCode.LOGIN_EXP_ERR.desc,ErrorCode.LOGIN_EXP_ERR.code);
         }

@@ -8,13 +8,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-
 /**
  * @author caijiang
  * @date 2018/3/8
  */
-//@FeignClient(value = "zuul",url = "127.0.0.1:8080")
-@FeignClient(value = "hstn")
+@FeignClient(value = "zuul",url = "127.0.0.1:8080")
+//@FeignClient(value = "hstn",url = "13.230.243.231:8080")
 public interface IZuulFeign {
 
 
@@ -26,4 +25,5 @@ public interface IZuulFeign {
     JsonResponse checkToken(@RequestBody CheckTokenDto checkTokenDto);
 
 }
+
 

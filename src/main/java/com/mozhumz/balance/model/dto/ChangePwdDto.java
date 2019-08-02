@@ -24,7 +24,4 @@ public class ChangePwdDto {
     @ApiModelProperty(value = "客户id")
     private Long id;
 
-    public static void main(String[] args) throws Exception {
-
-    }
 }

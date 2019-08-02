@@ -15,7 +15,10 @@ spring:
       url: jdbc:mysql://localhost:3306/heshituina_balance_pidu?useUnicode=true&useSSL=false&characterEncoding=utf8&serverTimezone=GMT%2B8
       username: root
       password: 123456
-
+  rabbitmq:
+    addresses: 127.0.0.1
+    username: guest
+    password: guest
 server:
   port: 8082
 
@@ -25,7 +28,10 @@ eureka:
       defaultZone: http://127.0.0.1:8888/eureka/
 
 urlPre:
-  web: http://127.0.0.1:8080/balance/index.html
-  sso: http://127.0.0.1:8080/zuul/api/login/checkLogin
-  webOut: http://127.0.0.1:8080/balance/api/login/logOut
+  web: http://127.0.0.1:8082/index.html
+  sso: http://127.0.0.1:8080/hstn/api/login/checkLogin
+  webOut: http://127.0.0.1:8082/api/user/logOut
+#  web: http://mozhu.iok.la/balance/index.html
+#  sso: http://mozhu.iok.la/hstn/api/login/checkLogin
+#  webOut: http://mozhu.iok.la/balance/api/login/logOut
 

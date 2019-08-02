@@ -15,6 +15,9 @@
         <result column="phone" property="phone" />
         <result column="balancePwd" property="balancePwd" />
         <result column="gender" property="gender" />
+        <result column="is0pwd" property="is0pwd" />
+        <result column="is0bpwd" property="is0bpwd" />
+        <result column="email" property="email" />
 
     </resultMap>
     <resultMap id="userVOMap" type="com.mozhumz.balance.model.vo.UserVO">
@@ -28,6 +31,9 @@
         <result column="realName" property="realName" />
         <result column="phone" property="phone" />
         <result column="gender" property="gender" />
+        <result column="is0pwd" property="is0pwd" />
+        <result column="is0bpwd" property="is0bpwd" />
+        <result column="email" property="email" />
         <collection property="roleList"  ofType="com.mozhumz.balance.model.entity.Role" select="findRoleInfo"
                     column="{id=id}">
         </collection>

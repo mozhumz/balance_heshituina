@@ -239,6 +239,21 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            <!--打包时 将项目制作成windows服务-->
+            <plugin>
+                <groupId>cn.joylau.code</groupId>
+                <artifactId>joylau-springboot-daemon-windows</artifactId>
+                <version>1.1.RELEASE</version>
+                <executions>
+                    <execution>
+                        <id>make-win-service</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>make-win-service</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

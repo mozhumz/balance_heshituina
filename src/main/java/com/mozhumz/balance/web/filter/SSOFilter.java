@@ -42,7 +42,7 @@ public class SSOFilter implements Filter {
         HttpServletResponse response= (HttpServletResponse) servletResponse;
         //判断是否有局部会话
         HttpSession session=request.getSession();
-        String token= (String) session.getAttribute(CommonConstant.token);
+        String token= (String) session.getAttribute(CommonConstant.balanceToken);
         if(CheckParamsUtil.check(token)){
             filterChain.doFilter(request,response);
             return;
@@ -58,7 +58,7 @@ public class SSOFilter implements Filter {
             checkTokenDto.setSessionId(request.getSession().getId());
             if(zuulResult.checkToken(checkTokenDto)){
                 //设置session
-                request.getSession().setAttribute(CommonConstant.token,tokenStr);
+                request.getSession().setAttribute(CommonConstant.balanceToken,tokenStr);
                 filterChain.doFilter(request,response);
                 return;
             }

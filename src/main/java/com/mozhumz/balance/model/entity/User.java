@@ -68,6 +68,13 @@ public class User extends Model<User> {
 
     private Integer gender;
 
+    @ApiModelProperty(value = "登录密码是否为初始密码：1是 2否")
+    private Integer is0pwd;
+    @ApiModelProperty(value = "操作密码是否为初始密码：1是 2否")
+    private Integer is0bpwd;
+
+    private String email;
+
 
     @Override
     protected Serializable pkVal() {
