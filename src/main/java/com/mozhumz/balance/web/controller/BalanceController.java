@@ -57,13 +57,6 @@ public class BalanceController {
     private IUsermanageFeign usermanageFeign;
 
 
-    @ApiOperation(value = "退出")
-    @RequestMapping(value = "/logOut", method = RequestMethod.GET)
-    public JsonResponse logOut() {
-        request.getSession().invalidate();
-        return JsonResponse.success(null);
-
-    }
 
 
     @ApiOperation(value = "添加服务项目")

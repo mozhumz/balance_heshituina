@@ -1,5 +1,10 @@
-var pre='http://127.0.0.1:8080/balance';
+var pre='http://127.0.0.1:8082';
+//var pre='http://mozhu.iok.la';
 var zuulPre='http://127.0.0.1:8080/hstn';
+
+//var pre='http://ec2-52-196-36-65.ap-northeast-1.compute.amazonaws.com';
+//var zuulPre='http://ec2-13-230-243-231.ap-northeast-1.compute.amazonaws.com/hstn';
+
 var logOutUrl=zuulPre+'/api/login/logOut';
 var loginHtml=zuulPre+'/index.html';
 //获取登录用户-Get

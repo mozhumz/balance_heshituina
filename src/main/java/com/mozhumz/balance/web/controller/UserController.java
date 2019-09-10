@@ -53,6 +53,7 @@ public class UserController {
     @ApiOperation(value = "退出")
     @RequestMapping(value = "/logOut", method = RequestMethod.GET)
     public JsonResponse logOut() {
+        log.info("sessionId:"+request.getSession().getId());
         request.getSession().invalidate();
         return JsonResponse.success(null);
 

@@ -26,5 +26,7 @@ public class CommonConstant {
 
     public static final String emailCodeTitle="何氏推拿-验证码";
 
+    public static final String[]remoteUrls={"/api/user/logOut"};
+
 
 }

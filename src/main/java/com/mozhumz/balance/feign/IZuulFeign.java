@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @author caijiang
  * @date 2018/3/8
  */
-@FeignClient(value = "zuul")
-
+@FeignClient(value = "hstn")
+//@FeignClient(value = "hstn",url = "13.230.243.231:8080")
 public interface IZuulFeign {
 
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @date 2018/3/8
  */
 @FeignClient(value = "usermanage")
-
+//@FeignClient(value = "usermanage",url="127.0.0.1:8081")
 
 public interface IUsermanageFeign {
 
@@ -25,6 +25,8 @@ public interface IUsermanageFeign {
     @RequestMapping(value = "/api/sys/sendEmailCode" ,method = RequestMethod.POST)
     JsonResponse sendEmailCode(@RequestBody SendEmailDto sendEmailDto);
 
+    @RequestMapping(value = "/api/test/addManageTest" ,method = RequestMethod.GET)
+    JsonResponse addManageTest();
 }
 
 
