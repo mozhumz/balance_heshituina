@@ -19,7 +19,6 @@ public class TestServiceImpl implements ITestService {
     private IUsermanageFeign usermanageFeign;
 
     @Override
-    @GlobalTransactional
     public JsonResponse fescarTestAdd() {
         System.out.println("com.mozhumz.balance.service.impl.TestServiceImpl.fescarTestAdd-xid:"+ RootContext.getXID());
 
